@@ -7,7 +7,7 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DNWS
-{   //create data base
+{
     class Following
     {
         public int FollowingId { get; set; }
@@ -99,34 +99,6 @@ namespace DNWS
                 context.SaveChanges();
             }
         }
-       
-        
-        public void Removefollow(string followingName)
-        {
-            if (user == null)
-            {
-                throw new Exception("User is not set");
-            }
-            if (followingName == null)
-            {
-                throw new Exception("Following not found");
-            }
-            using (var context = new TweetContext())
-            {
-                if (user.Following == null)
-                {
-                    user.Following = new List<Following>();
-                }
-                List<Following> followings = user.Following.Where(b => b.Name == followingName).ToList();
-                if (followings.Count <= 0) return;
-                Following following = new Following();
-                following.Name = followingName;
-                user.Following.Remove(following);
-                context.Users.Update(user);
-                context.SaveChanges();
-            }
-        } 
-
         public List<Tweet> GetTimeline(User aUser)
         {
             if (aUser == null)
@@ -140,12 +112,6 @@ namespace DNWS
             }
             return timeline;
         }
-
-        internal void DeleteUser(string user)
-        {
-            throw new NotImplementedException();
-        }
-
         public List<Tweet> GetUserTimeline()
         {
             if (user == null)
@@ -210,42 +176,6 @@ namespace DNWS
                 context.SaveChanges();
             }
         }
-        ////////////////////////////////////////////////////////////////////////
-        public static void DeleteUser(string name, string password) //delete user 
-        {
-            User user = new User();
-            user.Name = name;
-            user.Password = password;
-
-            using (var context = new TweetContext())
-            {
-                List<User> userlist = context.Users.Where(b => b.Name.Equals(name)).ToList();
-                if (userlist.Count <= 0)
-                {
-                    throw new Exception("User not exists");
-
-                }
-                context.Users.Remove(user);
-                context.SaveChanges();
-            }
-        
-        }
-        public static bool UserCheck(string name)
-        {
-            using (var context = new TweetContext())
-            {
-                List<User> userlist = context.Users.Where(b => b.Name.Equals(name)).ToList();
-                if (userlist.Count == 1)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
-
-        ////////////////////////////////////////////////////////////////////////
 
         public static bool IsValidUser(string name, string password)
         {
@@ -276,6 +206,40 @@ namespace DNWS
             }
         }
 
+        public static bool CheckUser(string username)
+        {
+            using (var context = new TweetContext())
+            {
+                List<User> userlist = context.Users.Where(b => b.Name.Equals(username)).ToList();
+                if (userlist.Count == 1)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void DeleteUser(string username)
+        {
+            using (var context = new TweetContext())
+            {
+                List<User> userlist = context.Users.Where(b => b.Name.Equals(username)).ToList();
+                if (userlist.Count <= 0)
+                {
+                    throw new Exception("Not found");
+                }
+                List<User> followlist = context.Users.Where(b => true).Include(b => b.Following).ToList();
+                foreach (User temp in followlist)
+                {
+                    Twitter ntwitter = new Twitter(temp.Name);
+                    ntwitter.RemoveFollowing(userlist[0].Name);
+                }
+                context.Users.Remove(userlist[0]);
+                context.SaveChanges();
+            }
+        }
+
+
     }
     public class TwitterPlugin : IPlugin
     {
@@ -296,22 +260,12 @@ namespace DNWS
             sb.Append("<input type=\"text\" name=\"message\"></input>");
             sb.Append("<input type=\"submit\" name=\"action\" value=\"tweet\" /> <br />");
             sb.Append("</form>");
-
             sb.Append("Follow someone<br />");
             sb.Append("<form method=\"post\">");
-
             sb.Append("<input type=\"text\" name=\"following\"></input>");
             sb.Append("<input type=\"submit\" name=\"action\" value=\"following\" /> <br />");
-            sb.Append("<br />");
-
-            sb.Append("UnFollow someone<br />");
-            sb.Append("<form method=\"post\">");
-            sb.Append("<input type=\"text\" name=\"unfollowing\"></input>");
-            sb.Append("<input type=\"submit\" name=\"action\" value=\"unfollowing\" /> <br />");
-
             sb.Append("</form>");
             sb.Append(String.Format("<h3><b>{0}</b>'s timeline</h3><br />", twitter.GetUsername()));
-
             List<Tweet> tweets = twitter.GetUserTimeline();
             foreach (Tweet tweet in tweets)
             {
@@ -353,8 +307,7 @@ namespace DNWS
         }
 
 
-
-        public HTTPResponse GetResponse(HTTPRequest request)
+        public virtual HTTPResponse GetResponse(HTTPRequest request)
         {
             HTTPResponse response = new HTTPResponse(200);
             StringBuilder sb = new StringBuilder();

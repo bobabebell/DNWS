@@ -4,50 +4,49 @@
     "ThreadPoolSize" : "10",
     "AllowThreadModel" : "Pool|Multi|Single",
     "ThreadModel" : "Single",
-    "Plugins": [
-      {
-        "Path": "stat",
-        "Class": "DNWS.StatPlugin",
-        "Preprocessing": "true",
-        "Postprocessing": "false",
-        "Singleton": "false"
-      },
-      {
-        "Path": "ox",
-        "Class": "DNWS.OXPlugin",
-        "Preprocessing": "false",
-        "Postprocessing": "false"
-      },
-      {
-        "Path": "delay",
-        "Class": "DNWS.DelayPlugin",
-        "Preprocessing": "false",
-        "Postprocessing": "false"
-      },
-      {
-        "Path": "twitter",
-        "Class": "DNWS.TwitterPlugin",
-        "Preprocessing": "false",
-        "Postprocessing": "false"
-      },
-      {
-        "Path": "users",
-        "Class": "DNWS.TwitterPlugin",
-        "Preprocessing": "false",
-        "Postprocessing": "false"
-      },
-      {
-        "Path": "following",
-        "Class": "DNWS.TwitterPlugin",
-        "Preprocessing": "false",
-        "Postprocessing": "false"
-      },
-      {
-        "Path": "tweet",
-        "Class": "DNWS.TwitterPlugin",
-        "Preprocessing": "false",
-        "Postprocessing": "false"
-      }
-
+  "Plugins": [
+    {
+      "Path": "stat",
+      "Class": "DNWS.StatPlugin",
+      "Preprocessing": "true",
+      "Postprocessing": "false",
+      "Singleton": "false"
+    },
+    {
+      "Path": "ox",
+      "Class": "DNWS.OXPlugin",
+      "Preprocessing": "false",
+      "Postprocessing": "false"
+    },
+    {
+      "Path": "delay",
+      "Class": "DNWS.DelayPlugin",
+      "Preprocessing": "false",
+      "Postprocessing": "false"
+    },
+    {
+      "Path": "twitter",
+      "Class": "DNWS.TwitterPlugin",
+      "Preprocessing": "false",
+      "Postprocessing": "false"
+    },
+    {
+      "Path": "user",
+      "Class": "DNWS.TwitterAPIPlugin",
+      "Preprocessing": "false",
+      "Postprocessing": "false"
+    },
+    {
+      "Path": "follow",
+      "Class": "DNWS.TwitterAPIPlugin",
+      "Preprocessing": "false",
+      "Postprocessing": "false"
+    },
+    {
+      "Path": "tweet",
+      "Class": "DNWS.TwitterAPIPlugin",
+      "Preprocessing": "false",
+      "Postprocessing": "false"
+    }
   ]
 }
