@@ -3,7 +3,7 @@
     "Port": "8080",
     "ThreadPoolSize" : "10",
     "AllowThreadModel" : "Pool|Multi|Single",
-    "ThreadModel" : "Multi",
+    "ThreadModel" : "Single",
   "Plugins": [
     {
       "Path": "stat",
@@ -31,26 +31,20 @@
       "Postprocessing": "false"
     },
     {
-      "Path": "twitterAPI",
-      "Class": "DNWS.TwitterAPI",
+      "Path": "users",
+      "Class": "DNWS.TwitterApiPlugin",
       "Preprocessing": "false",
       "Postprocessing": "false"
     },
     {
-      "Path": "user",
-      "Class": "DNWS.TwitterAPI",
-      "Preprocessing": "false",
-      "Postprocessing": "false"
-    },
-    {
-      "Path": "following",
-      "Class": "DNWS.TwitterAPI",
+      "Path": "follow",
+      "Class": "DNWS.TwitterApiPlugin",
       "Preprocessing": "false",
       "Postprocessing": "false"
     },
     {
       "Path": "tweet",
-      "Class": "DNWS.TwitterAPI",
+      "Class": "DNWS.TwitterApiPlugin",
       "Preprocessing": "false",
       "Postprocessing": "false"
     }

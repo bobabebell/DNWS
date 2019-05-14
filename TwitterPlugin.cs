@@ -29,9 +29,6 @@ namespace DNWS
         public DateTime DateCreated { get; set; }
     }
     // Ref: https://docs.microsoft.com/en-us/ef/core/get-started/netcore/new-db-sqlite
-    // Need to create db before run a program
-    // dotnet ef migrations add InitialCreate
-    // dotnet ef database update
     class TweetContext : DbContext
     {
         public DbSet<Tweet> Tweets { get; set; }
@@ -180,32 +177,6 @@ namespace DNWS
             }
         }
 
-        public void DeleteUser(string name)
-        {
-            using (var context = new TweetContext())
-            {
-                try{
-                    List<User> userlist = context.Users.Where(b => b.Name.Equals(name)).ToList();
-                    if(userlist.Count<0){
-                        throw new Exception("User not exists");
-                    }
-                    List<User> followingList = context.Users.Where(b => b.Name.Equals(name)).Include(u => u.Following).ToList();
-                    foreach(User following in followingList){
-                        Twitter t = new Twitter(userlist[0].Name);
-                        t.RemoveFollowing(following.Name);
-                    }
-                    List<User> followList = context.Users.Where(b => true).Include(u => u.Following).ToList();
-                    foreach(User follow in followingList){
-                        Twitter t = new Twitter(follow.Name);
-                        t.RemoveFollowing(userlist[0].Name);
-                    }                    
-                    context.Users.Remove(userlist[0]);
-                    context.SaveChanges();
-                }catch(Exception ex){
-                    Console.WriteLine(ex);
-                }
-            }
-        }
         public static bool IsValidUser(string name, string password)
         {
             using (var context = new TweetContext())
@@ -235,6 +206,31 @@ namespace DNWS
             }
         }
 
+        public static void DeleteUser(string name)
+        {
+            using (var context = new TweetContext())
+            {
+                List<User> user = context.Users.Where(b => b.Name.Equals(name)).ToList();
+                context.Users.Remove(user[0]);
+                context.SaveChanges();
+            }
+        }
+
+        public static List<Following> GetfollowUser(string name)
+        {
+            using (var context = new TweetContext())
+            {
+                try
+                {
+                    List<User> users = context.Users.Where(b => b.Name.Equals(name)).Include(b => b.Following).ToList();
+                    return users[0].Following;
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+        }
     }
     public class TwitterPlugin : IPlugin
     {
