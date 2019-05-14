@@ -114,8 +114,9 @@ namespace DNWS
         /// <returns></returns>
         protected HTTPResponse getFile(String path)
         {
-            HTTPResponse response = null;
 
+            HTTPResponse response = null;
+            _parent.Log("IN GET FILE method");
             // Guess the content type from file extension
             string fileType = "text/html";
             if (path.ToLower().EndsWith("jpg") || path.ToLower().EndsWith("jpeg"))
@@ -166,10 +167,9 @@ namespace DNWS
                 bytesRead = ns.Read(bytes, 0, bytes.Length);
                 requestStr += Encoding.UTF8.GetString(bytes, 0, bytesRead);
             } while (ns.DataAvailable);
-
             request = new HTTPRequest(requestStr);
             request.addProperty("RemoteEndPoint", _client.RemoteEndPoint.ToString());
-
+            //_parent.Log(requestStr);
             // We can handle only GET now
             if(request.Status != 200) {
                 response = new HTTPResponse(request.Status);
@@ -185,6 +185,7 @@ namespace DNWS
                 }
                 // plugins
                 foreach(KeyValuePair<string, PluginInfo> plugininfo in plugins) {
+                    //_parent.Log(request.Filename.ToString() + " == " + plugininfo.Key.ToString() + " : " + request.Filename.StartsWith(plugininfo.Key).ToString());
                     if(request.Filename.StartsWith(plugininfo.Key)) {
                         response = plugininfo.Value.reference.GetResponse(request);
                         processed = true;

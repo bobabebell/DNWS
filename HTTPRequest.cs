@@ -57,20 +57,25 @@ namespace DNWS
         _status = 401;
         return;
       }
-      if (!statusLine[0].ToLower().Equals("get"))
+      // FIX ERROR and Added DELETE
+      if (statusLine[0].ToLower().Equals("get"))
       {
         _method = "GET";
-      } else if(!statusLine[0].ToLower().Equals("post")) {
+      } else if(statusLine[0].ToLower().Equals("post")) {
         _method = "POST";
-      } else {
+      } else if(statusLine[0].ToLower().Equals("delete")){
+        _method = "DELETE";
+      }else{
         _status = 501;
         return;
       }
       _status = 200;
 
       _url = statusLine[1];
+      
       String[] urls = Regex.Split(_url, "/");
       _filename = urls[urls.Length - 1];
+      //_filename = _url.Substring(1); TRY TO FIX URL
       String[] parts = Regex.Split(_filename, "[?]");
       if (parts.Length > 1 && parts[1].Contains('&'))
       {
@@ -87,7 +92,7 @@ namespace DNWS
       }
 
       if(lines.Length == 1) return;
-      //////////////////////////////////////////////////////////////////////////////////
+
       for(int i = 1; i != lines.Length; i++) {
         String[] pair = Regex.Split(lines[i], ": "); //FIXME
         if(pair.Length == 0) continue;
@@ -126,5 +131,6 @@ namespace DNWS
     {
       _requestListDictionary[key.ToLower()] = value;
     }
+    
   }
 }
